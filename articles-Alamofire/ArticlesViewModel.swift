@@ -28,10 +28,6 @@ class AriclesViewModel: ObservableObject{
         }
     }
         
-    
-          
-   
- 
     }
     var dateFormatter : DateFormatter?{
         let formatter = DateFormatter()
