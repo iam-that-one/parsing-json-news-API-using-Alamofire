@@ -21,115 +21,111 @@ struct ContentView: View {
             ZStack(){
                 Color.green.opacity(0.30)
                 if stillLoding{
-                  ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle())
-                    .scaleEffect(1)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1)
                 }
-             //   if imagePreviewstillLoding{
-                 // ProgressView()
-                 //   .progressViewStyle(CircularProgressViewStyle())
-                  //  .scaleEffect(1)
-               // }
-        VStack(alignment: .leading){
-            ScrollView(showsIndicators: false){
-           
-            ForEach(avm.articles){ article in
+                
                 VStack(alignment: .leading){
-                    HStack{
-                        Image(uiImage: (UIImage(data: avm.loadImage(ImageUrl: article.urlToImage ?? "https://i.pinimg.com/564x/6f/de/85/6fde85b86c86526af5e99ce85f57432e.jpg") ?? Data()) ?? UIImage(systemName: "star"))!)
-                       
-                    .resizable()
+                    ScrollView(showsIndicators: false){
                         
-                        .scaledToFit()
-                            .frame(width: 100, height: 100)
-                        .padding(.leading)
-                        .onTapGesture{
-                            currentImage = UIImage(data: avm.loadImage(ImageUrl: article.urlToImage ?? "") ?? Data()) ?? UIImage()
+                        ForEach(avm.articles){ article in
+                            VStack(alignment: .leading){
+                                HStack{
+                                    Image(uiImage: (UIImage(data: avm.loadImage(ImageUrl: article.urlToImage ?? "https://i.pinimg.com/564x/6f/de/85/6fde85b86c86526af5e99ce85f57432e.jpg") ?? Data()) ?? UIImage(systemName: "star"))!)
+                                        
+                                        .resizable()
+                                        
+                                        .scaledToFit()
+                                        .frame(width: 100, height: 100)
+                                        .padding(.leading)
+                                        .onTapGesture{
+                                            currentImage = UIImage(data: avm.loadImage(ImageUrl: article.urlToImage ?? "") ?? Data()) ?? UIImage()
+                                            
+                                            withAnimation(){
+                                                zoomIn = true
+                                                //imagePreviewstillLoding = true
+                                            }
+                                        }
+                                    
+                                    VStack(alignment: .leading){
+                                        Text("Author:")
+                                            .font(Font.system(size: 12, weight: .black, design: .monospaced))
+                                        if let author = article.author{
+                                            if author.contains("http"){
+                                                Link("author website", destination: URL(string: author)!)
+                                            }
+                                            else{
+                                                Text(article.author ?? "")
+                                            }
+                                            Text("\(article.date,formatter: avm.dateFormatter)")
+                                                .font(Font.system(size: 12))
+                                            
+                                        }
+                                    }
+                                    
+                                    
+                                    Spacer()
+                                }.background(Color.yellow)
+                                .onAppear{stillLoding = false}
+                                Text(article.title ?? "")
+                                    .fontWeight(.bold)
+                                    .padding(.leading)
+                                Text(article.description ?? "")
+                                    .font(Font.system(size: 12,design: .serif))
+                                    .padding()
                                 
-                        withAnimation(){
-                            zoomIn = true
-                            //imagePreviewstillLoding = true
+                                Text(article.content ?? "")
+                                    .font(.body)
+                                    .padding(.leading)
+                                Link("Read more",destination: URL(string: article.url ?? "")!)
+                                    .padding(.leading)
                             }
                         }
                         
-                        VStack(alignment: .leading){
-                            Text("Author:")
-                                .font(Font.system(size: 12, weight: .black, design: .monospaced))
-                        if let author = article.author{
-                            if author.contains("http"){
-                                Link("author website", destination: URL(string: author)!)
-                            }
-                            else{
-                                Text(article.author ?? "")
-                            }
-                            Text("\(article.date,formatter: avm.dateFormatter)")
-                               .font(Font.system(size: 12))
-                           
+                    }.navigationBarTitle(Text("News"), displayMode: .inline)
+                    .frame(height: UIScreen.main.bounds.height - 100)
+                    .offset(y: 30)
+                    .onTapGesture {
+                        withAnimation(.spring()){
+                            zoomIn = false
                         }
                     }
-                       
-                          
-                        Spacer()
-                    }.background(Color.yellow)
-                    .onAppear{stillLoding = false}
-                Text(article.title ?? "")
-                    .fontWeight(.bold)
-                    .padding(.leading)
-                    Text(article.description ?? "")
-                        .font(Font.system(size: 12,design: .serif))
-                        .padding()
-                   
-                    Text(article.content ?? "")
-                    .font(.body)
-                        .padding(.leading)
-                    Link("Read more",destination: URL(string: article.url ?? "")!)
-                        .padding(.leading)
-            }
-            }
-            
-        }.navigationBarTitle(Text("News"), displayMode: .inline)
-            .frame(height: UIScreen.main.bounds.height - 100)
-            .offset(y: 30)
-            .onTapGesture {
-                withAnimation(.spring()){
-                zoomIn = false
-                }
-            }
-        }.onAppear{avm.fetchData()}
-        .frame(height: UIScreen.main.bounds.height - 100)
-       // .padding(.leading)
-        
+                }.onAppear{avm.fetchData()}
+                .frame(height: UIScreen.main.bounds.height - 100)
+                // .padding(.leading)
+                
                 if zoomIn == true{
                     Color.white.opacity(0.80)
-                  
-                        
+                    
+                    
                     ZStack(alignment: .topLeading){
-
-                    Image(uiImage: currentImage)
-                        .resizable()
-                        .frame(width: 350, height: 300)
-                        .scaledToFit()
-                        .transition((.move(edge: .bottom)))
-                       // .animation(zoomIn == true ? Animation.easeIn : Animation.easeInOut)
+                        
+                        Image(uiImage: currentImage)
+                            .resizable()
+                            .frame(width: 350, height: 300)
+                            .scaledToFit()
+                            .transition((.move(edge: .bottom)))
+                        // .animation(zoomIn == true ? Animation.easeIn : Animation.easeInOut)
                         Image(systemName: zoomIn == true ? "x.square.fill" : "x.square")
                             .foregroundColor(.white)
                             .shadow(color: .black,radius: 10)
                             
                             .onTapGesture {
                                 withAnimation(){
-                            zoomIn = false
-                                
-                          //  imagePreviewstillLoding = false
+                                    zoomIn = false
+                                    
+                                    //  imagePreviewstillLoding = false
                                 }
-                        }
-                    
+                            }
+                        
                     }
                 }//.onAppear(){stillLoding = false}
-            
+                
             }.ignoresSafeArea()
             
         }
-    
+        
     }
 }
 
