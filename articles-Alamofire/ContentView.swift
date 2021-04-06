@@ -45,7 +45,8 @@ struct ContentView: View {
                         .padding(.leading)
                         .onTapGesture{
                             currentImage = UIImage(data: avm.loadImage(ImageUrl: article.urlToImage ?? "") ?? Data()) ?? UIImage()
-                            withAnimation( .spring()){
+                                
+                        withAnimation(){
                             zoomIn = true
                             //imagePreviewstillLoding = true
                             }
@@ -90,7 +91,7 @@ struct ContentView: View {
             .frame(height: UIScreen.main.bounds.height - 100)
             .offset(y: 30)
             .onTapGesture {
-                withAnimation(){
+                withAnimation(.spring()){
                 zoomIn = false
                 }
             }
@@ -103,16 +104,21 @@ struct ContentView: View {
                   
                         
                     ZStack(alignment: .topLeading){
+
                     Image(uiImage: currentImage)
                         .resizable()
                         .frame(width: 350, height: 300)
                         .scaledToFit()
+                        .transition((.move(edge: .bottom)))
+                       // .animation(zoomIn == true ? Animation.easeIn : Animation.easeInOut)
                         Image(systemName: zoomIn == true ? "x.square.fill" : "x.square")
                             .foregroundColor(.white)
                             .shadow(color: .black,radius: 10)
+                            
                             .onTapGesture {
-                                withAnimation(.spring()){
+                                withAnimation(){
                             zoomIn = false
+                                
                           //  imagePreviewstillLoding = false
                                 }
                         }
